@@ -1,24 +1,26 @@
-import urllib.request
+import requests
 import telebot
 import time
 
 token = '' #Токен телеграмма
 url = ''   #Сайт который нужно монторить
-id =       #айди чата. (узнаем через https://api.telegram.org/bot $token$ /getUpdates)
-
-response = urllib.request.urlopen(url)
+id =  ' '     #айди чата. (узнаем через https://api.telegram.org/bot $token$ /getUpdates)
 
 bot = telebot.TeleBot(token)
 
 bot.send_message(id, 'Bot started')
 def status_check():
-    response.getcode()
-    print(response.getcode())
+    try:
+        response = requests.get(url, timeout=(100))
+        print(response)
 
-    if response.getcode() == 200:
-        print('norm')
-    else:
-        bot.send_message(id, 'Сервер упал.')
+    #except requests.exceptions.ReadTimeout as e:
+        #print('Oops. Read timeout occured')
+        #bot.send_message(id, e)
+
+    except requests.exceptions.ConnectTimeout as x:
+        print('Oops. Connection timeout occured!')
+        bot.send_message(id, " Connection to " + url + " timed out ")
 
 
 while True:
